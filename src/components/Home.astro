@@ -125,7 +125,7 @@ const builtAt = new Date().toISOString();
                 <p class="leading-relaxed text-ink-soft md:col-span-4">{text.text}</p>
                 <div class="flex flex-wrap items-start gap-x-5 gap-y-1 font-mono text-xs md:col-span-3 md:flex-col md:items-end md:text-right">
                   {p.release && (
-                    <a href={p.release.url} class="text-ink hover:underline">
+                    <a href={p.release.url} class="text-ink hover:underline" data-release={p.repo}>
                       {p.release.tag} · {date(p.release.date)}
                     </a>
                   )}
@@ -231,4 +231,22 @@ const builtAt = new Date().toISOString();
       <span class="font-mono text-xs">{s.updated} {date(builtAt)}</span>
     </div>
   </footer>
+
+  <script is:inline define:vars={{ dateLocale: s.dateLocale }}>
+    // The latest release of each app, asked of GitHub when the page opens, so a release made since the
+    // last build shows at once. The version from the build stays if GitHub doesn't answer.
+    for (const link of document.querySelectorAll("[data-release]")) {
+      fetch(`https://api.github.com/repos/Kastoria-Dev-Core/${link.dataset.release}/releases/latest`, {
+        headers: { Accept: "application/vnd.github+json" },
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((r) => {
+          if (!r || !r.tag_name) return;
+          const when = new Date(r.published_at).toLocaleDateString(dateLocale, { day: "numeric", month: "short", year: "numeric" });
+          link.textContent = `${r.tag_name} · ${when}`;
+          link.href = r.html_url;
+        })
+        .catch(() => {});
+    }
+  </script>
 </Base>
