@@ -28,7 +28,7 @@ interface Bundle {
     number: string;
     name: { el: string; en: string };
     color: string;
-    directions: { stops: { stop: string }[]; shape?: string; branches?: { shape?: string }[] }[];
+    directions: { stops: { stop: string }[]; shape?: string; branches?: { stops?: string[]; shape?: string }[] }[];
   }[];
 }
 
@@ -91,6 +91,10 @@ export async function loadNetwork(width = 1000): Promise<NetworkMap | null> {
     +(pad + (maxLat - lat) * scale).toFixed(1),
   ];
 
+  const onALine = new Set(
+    bundle.lines.flatMap((l) => l.directions.flatMap((d) => [...d.stops.map((s) => s.stop), ...(d.branches ?? []).flatMap((b) => b.stops ?? [])])),
+  );
+
   const lines: MapLine[] = paths.map(({ line, parts }) => ({
     id: line.id,
     number: line.number,
@@ -105,7 +109,9 @@ export async function loadNetwork(width = 1000): Promise<NetworkMap | null> {
     width,
     height,
     lines,
+    // Only stops a line calls at: a stop of a route the app doesn't draw would sit alone off every line
     stops: bundle.stops
+      .filter((s) => onALine.has(s.id))
       .filter((s) => s.lat > minLat && s.lat < maxLat && s.lng > minLng && s.lng < maxLng)
       .map((s) => xy(s.lat, s.lng)),
     stopCount: bundle.stops.length,
