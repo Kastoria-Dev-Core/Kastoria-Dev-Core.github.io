@@ -1,0 +1,234 @@
+---
+import Base from "../layouts/Base.astro";
+import NetworkMap from "./NetworkMap.astro";
+import { t, type Lang } from "../lib/i18n";
+import { loadNetwork } from "../lib/network";
+import { latestRelease, recentActivity } from "../lib/github";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const s = t[lang];
+
+// Everything below is read once, when the site is built (daily on CI)
+const [network, androidRelease, iosRelease, activity] = await Promise.all([
+  loadNetwork(),
+  latestRelease("astiko-ktel-kastorias-app"),
+  latestRelease("astiko-ktel-kastorias-ios"),
+  recentActivity(8, ["astiko-ktel-live", "astiko-ktel-odigoi"]),
+]);
+
+const gh = "https://github.com/Kastoria-Dev-Core";
+const pages = "https://kastoria-dev-core.github.io";
+const date = (iso: string) =>
+  new Date(iso).toLocaleDateString(s.dateLocale, { day: "numeric", month: "short", year: "numeric" });
+const shortDate = (iso: string) => new Date(iso).toLocaleDateString(s.dateLocale, { day: "2-digit", month: "2-digit" });
+
+// Each project gets the colour of the bus line with its number
+const lineColor = (n: number) => network?.lines.find((l) => Number(l.number) === n)?.color ?? "#13283f";
+
+const projects = [
+  { key: "android", tech: "Kotlin · Jetpack Compose", repo: "astiko-ktel-kastorias-app", docs: `${pages}/astiko-ktel-kastorias-app/`, release: androidRelease },
+  { key: "ios", tech: "Swift · SwiftUI", repo: "astiko-ktel-kastorias-ios", docs: `${pages}/astiko-ktel-kastorias-ios/`, release: iosRelease },
+  { key: "announcements", tech: "Node.js · Vercel cron", repo: "astiko-ktel-announcements", docs: null, release: null },
+  { key: "unicalendar", tech: "Kotlin · Jetpack Compose", repo: "UniCalendar", docs: null, release: null },
+] as const;
+
+const team = [
+  { el: "Ιωάννης Μιχαδάσης", en: "Ioannis Michadasis", login: "michadasis" },
+  { el: "Γιώργος Γάσπαρης", en: "Giorgos Gasparis", login: "GasparisGiorgos" },
+  { el: "Κωνσταντίνος Θεολόγου", en: "Konstantinos Theologou", login: "the0099" },
+];
+
+const shots = [
+  { src: "/shots/android-stop.png", label: "Android" },
+  { src: "/shots/ios-map.png", label: "iOS" },
+  { src: "/shots/android-home.png", label: "Android" },
+  { src: "/shots/ios-stop.png", label: "iOS" },
+];
+const builtAt = new Date().toISOString();
+---
+
+<Base lang={lang}>
+  <header class="sticky top-0 z-20 border-b border-white/10 bg-navy/95 text-white backdrop-blur">
+    <div class="mx-auto flex h-14 max-w-6xl items-center justify-between gap-6 px-5">
+      <a href={lang === "el" ? "/" : "/en/"} class="flex items-center gap-2.5 font-semibold tracking-tight">
+        <img src="/logo-mark.svg" alt="" width="28" height="28" class="rounded-md" />
+        Kastoria Dev Core
+      </a>
+      <nav class="flex items-center gap-5 text-sm text-white/75">
+        <a href="#work" class="hidden hover:text-white sm:inline">{s.nav.work}</a>
+        {activity && <a href="#log" class="hidden hover:text-white sm:inline">{s.nav.log}</a>}
+        <a href="#team" class="hidden hover:text-white sm:inline">{s.nav.team}</a>
+        <a href="#join" class="hidden hover:text-white sm:inline">{s.nav.join}</a>
+        <a href={s.nav.otherHref} hreflang={lang === "el" ? "en" : "el"} class="font-mono text-xs text-orange hover:underline">
+          {s.nav.other}
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="bg-navy text-white">
+      <div class="mx-auto grid max-w-6xl gap-10 px-5 pt-16 pb-14 lg:grid-cols-12 lg:gap-8 lg:pt-24 lg:pb-20">
+        <div class="lg:col-span-5 lg:pt-6">
+          <p class="font-mono text-xs tracking-wide text-orange">40.52°N 21.26°E · Καστοριά</p>
+          <h1 class="mt-5 text-4xl leading-[1.05] font-[750] tracking-[-0.03em] text-balance sm:text-5xl">
+            {s.intro}
+          </h1>
+          <p class="mt-6 max-w-md text-lg leading-relaxed text-white/70">{s.introMore}</p>
+          <div class="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
+            <a href="#work" class="rounded-md bg-orange px-4 py-2.5 font-semibold text-navy hover:bg-[#ffb13b]">{s.work} ↓</a>
+            <a href={gh} class="font-medium text-white/80 underline decoration-white/30 underline-offset-4 hover:text-white">github.com/Kastoria-Dev-Core</a>
+          </div>
+        </div>
+        <div class="lg:col-span-7">
+          {
+            network && (
+              <>
+                <NetworkMap map={network} label={s.mapCaption(network.lines.length, network.stopCount)} />
+                <p class="mt-3 max-w-lg font-mono text-[11px] leading-relaxed text-white/45">
+                  {s.mapCaption(network.lines.length, network.stopCount)}
+                </p>
+              </>
+            )
+          }
+        </div>
+      </div>
+    </section>
+
+    <section id="work" class="mx-auto max-w-6xl px-5 py-20 lg:py-28">
+      <div class="grid gap-6 lg:grid-cols-12">
+        <h2 class="text-3xl font-[750] tracking-[-0.02em] lg:col-span-4">{s.work}</h2>
+        <p class="text-ink-soft lg:col-span-6 lg:pt-2">{s.workLead}</p>
+      </div>
+
+      <ol class="mt-12 border-t border-rule">
+        {
+          projects.map((p, i) => {
+            const text = s.projects[p.key];
+            return (
+              <li class="grid gap-x-8 gap-y-3 border-b border-rule py-7 md:grid-cols-12">
+                <div class="flex items-start gap-4 md:col-span-5">
+                  <span
+                    class="mt-0.5 inline-flex h-7 min-w-10 items-center justify-center rounded-md px-1.5 font-mono text-sm font-bold text-white"
+                    style={`background:${lineColor(i + 1)}`}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3 class="text-lg font-semibold tracking-tight">{text.name}</h3>
+                    <p class="mt-1 font-mono text-xs text-ink-soft">{p.tech}</p>
+                  </div>
+                </div>
+                <p class="leading-relaxed text-ink-soft md:col-span-4">{text.text}</p>
+                <div class="flex flex-wrap items-start gap-x-5 gap-y-1 font-mono text-xs md:col-span-3 md:flex-col md:items-end md:text-right">
+                  {p.release && (
+                    <a href={p.release.url} class="text-ink hover:underline">
+                      {p.release.tag} · {date(p.release.date)}
+                    </a>
+                  )}
+                  <a href={`${gh}/${p.repo}`} class="text-ink-soft hover:text-ink hover:underline">GitHub ↗</a>
+                  {p.docs && <a href={p.docs} class="text-ink-soft hover:text-ink hover:underline">Docs ↗</a>}
+                </div>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </section>
+
+    <section class="bg-paper-2">
+      <div class="mx-auto max-w-6xl px-5 py-16">
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-6">
+          {
+            shots.map((shot, i) => (
+              <figure class={i % 2 ? "sm:translate-y-8" : ""}>
+                <img
+                  src={shot.src}
+                  alt=""
+                  loading="lazy"
+                  width="430"
+                  height="935"
+                  class="w-full rounded-[22px] border border-black/10 shadow-[0_12px_40px_-12px_rgb(19_40_63/0.35)]"
+                />
+                <figcaption class="mt-2 font-mono text-[11px] text-ink-soft">{shot.label}</figcaption>
+              </figure>
+            ))
+          }
+        </div>
+        <p class="mt-14 font-mono text-xs text-ink-soft">{s.shotsCaption}</p>
+      </div>
+    </section>
+
+    {
+      activity && activity.recent.length > 0 && (
+        <section id="log" class="mx-auto max-w-6xl px-5 py-20 lg:py-28">
+          <div class="grid gap-6 lg:grid-cols-12">
+            <h2 class="text-3xl font-[750] tracking-[-0.02em] lg:col-span-4">{s.log}</h2>
+            <p class="text-ink-soft lg:col-span-6 lg:pt-2">{s.logLead(activity.totalMerged)}</p>
+          </div>
+          <ul class="mt-10 divide-y divide-rule border-y border-rule">
+            {activity.recent.map((pr) => (
+              <li>
+                <a href={pr.url} class="group grid gap-x-6 gap-y-1 py-3.5 sm:grid-cols-[5rem_15rem_1fr]">
+                  <span class="font-mono text-xs text-ink-soft sm:pt-0.5">{shortDate(pr.date)}</span>
+                  <span class="truncate font-mono text-xs text-ink-soft sm:pt-0.5">
+                    {pr.repo}#{pr.number}
+                  </span>
+                  <span class="group-hover:underline">{pr.title}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <section id="team" class="border-t border-rule">
+      <div class="mx-auto grid max-w-6xl gap-10 px-5 py-20 lg:grid-cols-12 lg:py-28">
+        <div class="lg:col-span-4">
+          <h2 class="text-3xl font-[750] tracking-[-0.02em]">{s.team}</h2>
+          <p class="mt-4 text-ink-soft">{s.teamLead}</p>
+        </div>
+        <ul class="space-y-5 lg:col-span-8">
+          {
+            team.map((m) => (
+              <li>
+                <a href={`https://github.com/${m.login}`} class="group flex items-center gap-4">
+                  <img src={`https://avatars.githubusercontent.com/${m.login}?s=96`} alt="" width="40" height="40" loading="lazy" class="rounded-full ring-1 ring-rule" />
+                  <span class="text-xl font-semibold tracking-tight group-hover:underline sm:text-2xl">{m[lang]}</span>
+                  <span class="font-mono text-xs text-ink-soft">@{m.login}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <section id="join" class="bg-orange text-navy">
+      <div class="mx-auto grid max-w-6xl gap-8 px-5 py-16 lg:grid-cols-12 lg:py-20">
+        <h2 class="text-3xl font-[750] tracking-[-0.02em] lg:col-span-4">{s.join}</h2>
+        <div class="lg:col-span-8">
+          <p class="max-w-2xl text-lg leading-relaxed">{s.joinText}</p>
+          <div class="mt-6 flex flex-wrap gap-x-6 gap-y-2 font-semibold">
+            <a href={`${gh}/.github/blob/main/CONTRIBUTING.md`} class="underline decoration-navy/40 underline-offset-4 hover:decoration-navy">{s.joinLink} →</a>
+            <a href={`${gh}?tab=repositories`} class="underline decoration-navy/40 underline-offset-4 hover:decoration-navy">{s.reposLink} →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-navy-deep text-white/60">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-8 text-sm">
+      <span class="flex items-center gap-2 text-white">
+        <img src="/logo-mark.svg" alt="" width="20" height="20" class="rounded" /> Kastoria Dev Core
+      </span>
+      <span>{s.footer}</span>
+      <span class="font-mono text-xs">{s.updated} {date(builtAt)}</span>
+    </div>
+  </footer>
+</Base>
