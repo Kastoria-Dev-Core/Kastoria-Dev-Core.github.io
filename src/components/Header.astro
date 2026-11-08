@@ -1,0 +1,32 @@
+---
+import { t, type Lang } from "../lib/i18n";
+
+interface Props {
+  lang: Lang;
+  /** Where the language link goes: the same page in the other language */
+  otherHref: string;
+  /** Show the link to the recent pull requests (only when the home page has them) */
+  showLog?: boolean;
+}
+const { lang, otherHref, showLog = true } = Astro.props;
+const s = t[lang];
+const home = lang === "el" ? "/" : "/en/";
+---
+
+<header class="sticky top-0 z-20 border-b border-white/10 bg-navy/95 text-white backdrop-blur">
+  <div class="mx-auto flex h-14 max-w-6xl items-center justify-between gap-6 px-5">
+    <a href={home} class="flex items-center gap-2.5 font-semibold tracking-tight">
+      <img src="/logo-mark.svg" alt="" width="28" height="28" class="rounded-md" />
+      Kastoria Dev Core
+    </a>
+    <nav class="flex items-center gap-5 text-sm text-white/75">
+      <a href={`${home}#work`} class="hidden hover:text-white sm:inline">{s.nav.work}</a>
+      {showLog && <a href={`${home}#log`} class="hidden hover:text-white sm:inline">{s.nav.log}</a>}
+      <a href={`${home}#team`} class="hidden hover:text-white sm:inline">{s.nav.team}</a>
+      <a href={`${home}#join`} class="hidden hover:text-white sm:inline">{s.nav.join}</a>
+      <a href={otherHref} hreflang={lang === "el" ? "en" : "el"} class="font-mono text-xs text-orange hover:underline">
+        {s.nav.other}
+      </a>
+    </nav>
+  </div>
+</header>

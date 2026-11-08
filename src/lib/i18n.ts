@@ -31,6 +31,8 @@ export const t = {
     reposLink: "Όλα τα repositories",
     footer: "Κάθε έργο έχει τη δική του άδεια, γραμμένη στο repository του.",
     updated: "Ενημερώθηκε",
+    privacy: "Απόρρητο",
+    support: "Υποστήριξη",
     dateLocale: "el-GR",
   },
   en: {
@@ -62,6 +64,8 @@ export const t = {
     reposLink: "All repositories",
     footer: "Each project has its own license, stated in its repository.",
     updated: "Updated",
+    privacy: "Privacy",
+    support: "Support",
     dateLocale: "en-GB",
   },
 } as const;

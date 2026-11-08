@@ -1,0 +1,25 @@
+---
+import { t, type Lang } from "../lib/i18n";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const s = t[lang];
+const prefix = lang === "el" ? "" : "/en";
+const built = new Date().toLocaleDateString(s.dateLocale, { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/Athens" });
+---
+
+<footer class="bg-navy-deep text-white/60">
+  <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-8 gap-y-4 px-5 py-8 text-sm">
+    <span class="flex items-center gap-2 text-white">
+      <img src="/logo-mark.svg" alt="" width="20" height="20" class="rounded" /> Kastoria Dev Core
+    </span>
+    <span class="flex-1">{s.footer}</span>
+    <nav class="flex gap-5">
+      <a href={`${prefix}/privacy/`} class="hover:text-white">{s.privacy}</a>
+      <a href={`${prefix}/support/`} class="hover:text-white">{s.support}</a>
+    </nav>
+    <span class="font-mono text-xs">{s.updated} {built}</span>
+  </div>
+</footer>
