@@ -49,8 +49,13 @@
   animation: draw 2.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 @keyframes draw {
+  99% {
+    stroke-dasharray: 1;
+  }
   to {
     stroke-dashoffset: 0;
+    /* A plain line once drawn, so nothing of the dash pattern is left */
+    stroke-dasharray: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -59,6 +64,6 @@
   }
   .draw path.route {
     animation: none;
-    stroke-dashoffset: 0;
+    stroke-dasharray: none;
   }
 }
