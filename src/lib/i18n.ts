@@ -14,7 +14,7 @@ export const t = {
     workLead: "Όλα ανοιχτού κώδικα. Ο κώδικας, τα docs και οι εκδόσεις τους είναι στο GitHub.",
     projects: {
       android: { name: "Αστικά Καστοριάς για Android", text: "Δρομολόγια, στάσεις και ζωντανές ώρες για κάθε γραμμή της πόλης. Ξέρει τις αργίες και το Πάσχα, δουλεύει χωρίς σύνδεση." },
-      ios: { name: "Αστικά Καστοριάς για iPhone", text: "Η ίδια εφαρμογή σε SwiftUI. Κανείς μας δεν έχει Mac, οπότε χτίζεται και ελέγχεται ολόκληρη στο GitHub Actions." },
+      ios: { name: "Αστικά Καστοριάς για iPhone", text: "Η ίδια εφαρμογή σε SwiftUI, με τα ίδια δεδομένα και την ίδια λογική. Χτίζεται, ελέγχεται και κυκλοφορεί αυτόματα από το GitHub Actions." },
       announcements: { name: "astiko-ktel-announcements", text: "Διαβάζει τις ανακοινώσεις από το site του ΚΤΕΛ και τις κάνει feed για τις εφαρμογές." },
       unicalendar: { name: "UniCalendar", text: "Ημερολόγιο για Android που φέρνει μόνο του τα μαθήματα και τις εξεταστικές του πανεπιστημίου." },
     },
@@ -44,7 +44,7 @@ export const t = {
     workLead: "All open source. Their code, docs and releases are on GitHub.",
     projects: {
       android: { name: "Kastoria City Buses for Android", text: "Timetables, stops and live times for every line in town. Knows the holidays and Easter, works offline." },
-      ios: { name: "Kastoria City Buses for iPhone", text: "The same app in SwiftUI. None of us owns a Mac, so it's built and tested entirely on GitHub Actions." },
+      ios: { name: "Kastoria City Buses for iPhone", text: "The same app in SwiftUI, with the same data and logic. Built, tested and released automatically by GitHub Actions." },
       announcements: { name: "astiko-ktel-announcements", text: "Reads the operator's notices off its website and turns them into a feed for the apps." },
       unicalendar: { name: "UniCalendar", text: "An Android calendar that brings in the university's lectures and exam timetables on its own." },
     },
