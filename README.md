@@ -21,4 +21,6 @@ npm run build     # into dist/
 * `src/components/NetworkMap.astro` the map of the bus lines
 * `src/lib/i18n.ts` all the text, in Greek and English
 * `src/styles/global.css` the brand colours and fonts (Commissioner, like the apps, and JetBrains Mono)
-* `public/` the logo, from the organisation's `.github/brand`, and screenshots of the apps
+* `public/` the logo, from the organisation's `.github/brand`, and the apps' icons
+
+The screenshots of the apps come straight from their repositories (`docs/screenshots`), which their CI keeps up to date.
