@@ -23,8 +23,9 @@ const [network, androidRelease, iosRelease, uniCalendarRelease, activity] = awai
 const gh = "https://github.com/Kastoria-Dev-Core";
 const pages = "https://kastoria-dev-core.github.io";
 const date = (iso: string) =>
-  new Date(iso).toLocaleDateString(s.dateLocale, { day: "numeric", month: "short", year: "numeric" });
-const shortDate = (iso: string) => new Date(iso).toLocaleDateString(s.dateLocale, { day: "2-digit", month: "2-digit" });
+  new Date(iso).toLocaleDateString(s.dateLocale, { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/Athens" });
+const shortDate = (iso: string) =>
+  new Date(iso).toLocaleDateString(s.dateLocale, { day: "2-digit", month: "2-digit", timeZone: "Europe/Athens" });
 
 // Each project gets the colour of the bus line with its number
 const lineColor = (n: number) => network?.lines.find((l) => Number(l.number) === n)?.color ?? "#13283f";
@@ -243,7 +244,7 @@ const builtAt = new Date().toISOString();
         .then((res) => (res.ok ? res.json() : null))
         .then((r) => {
           if (!r || !r.tag_name) return;
-          const when = new Date(r.published_at).toLocaleDateString(dateLocale, { day: "numeric", month: "short", year: "numeric" });
+          const when = new Date(r.published_at).toLocaleDateString(dateLocale, { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/Athens" });
           link.textContent = `${r.tag_name} · ${when}`;
           link.href = r.html_url;
         })
