@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+/* The brand: navy and orange from the logo, a warm paper for the light sections.
+   Commissioner is also the apps' font; JetBrains Mono for data (dates, versions, line numbers). */
+@theme {
+  --font-sans: "Commissioner Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+
+  --color-navy: #13283f;
+  --color-navy-deep: #0c1b2c;
+  --color-navy-line: #26405e;
+  --color-orange: #f79d18;
+  --color-paper: #f4f1ea;
+  --color-paper-2: #ebe6db;
+  --color-ink: #13283f;
+  --color-ink-soft: #4a5a6d;
+  --color-rule: #d9d2c3;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "ss01";
+  }
+  body {
+    @apply bg-paper text-ink font-sans;
+  }
+  ::selection {
+    @apply bg-orange text-navy;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: #0f1f31;
+    --color-paper-2: #15283d;
+    --color-ink: #e9e5dc;
+    --color-ink-soft: #a9b4c1;
+    --color-rule: #283f58;
+  }
+}
+
+/* The network draws itself line by line, once */
+.draw path.route {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 2.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .draw path.route {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
