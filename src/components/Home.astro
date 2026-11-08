@@ -27,14 +27,16 @@ const date = (iso: string) =>
 const shortDate = (iso: string) =>
   new Date(iso).toLocaleDateString(s.dateLocale, { day: "2-digit", month: "2-digit", timeZone: "Europe/Athens" });
 
-// Each project gets the colour of the bus line with its number
-const lineColor = (n: number) => network?.lines.find((l) => Number(l.number) === n)?.color ?? "#13283f";
+// The buses app is one app on two platforms: one block, a row for each
+// and the cron job that feeds it the operator's announcements is part of it too
+const platforms = [
+  { label: "Android", repo: "astiko-ktel-kastorias-app", docs: `${pages}/astiko-ktel-kastorias-app/`, release: androidRelease, note: null },
+  { label: "iOS", repo: "astiko-ktel-kastorias-ios", docs: `${pages}/astiko-ktel-kastorias-ios/`, release: iosRelease, note: null },
+  { label: s.buses.announcements, repo: "astiko-ktel-announcements", docs: null, release: null, note: s.buses.announcementsNote },
+];
 
-const projects = [
-  { key: "android", tech: "Kotlin · Jetpack Compose", repo: "astiko-ktel-kastorias-app", docs: `${pages}/astiko-ktel-kastorias-app/`, release: androidRelease },
-  { key: "ios", tech: "Swift · SwiftUI", repo: "astiko-ktel-kastorias-ios", docs: `${pages}/astiko-ktel-kastorias-ios/`, release: iosRelease },
-  { key: "unicalendar", tech: "Kotlin · Jetpack Compose", repo: "UniCalendar", docs: null, release: uniCalendarRelease },
-  { key: "announcements", tech: "Node.js · cron job", repo: "astiko-ktel-announcements", docs: null, release: null },
+const others = [
+  { key: "unicalendar", icon: "/icon-unicalendar.png", tech: "Kotlin · Jetpack Compose", repo: "UniCalendar", release: uniCalendarRelease },
 ] as const;
 
 const team = [
@@ -44,10 +46,9 @@ const team = [
 ];
 
 const shots = [
-  { src: "/shots/android-stop.png", label: "Android" },
-  { src: "/shots/ios-map.png", label: "iOS" },
-  { src: "/shots/android-home.png", label: "Android" },
-  { src: "/shots/ios-stop.png", label: "iOS" },
+  { src: "/shots/android-stop.png" },
+  { src: "/shots/ios-map.png" },
+  { src: "/shots/android-home.png" },
 ];
 const builtAt = new Date().toISOString();
 ---
@@ -106,61 +107,71 @@ const builtAt = new Date().toISOString();
         <p class="text-ink-soft lg:col-span-6 lg:pt-2">{s.workLead}</p>
       </div>
 
-      <ol class="mt-12 border-t border-rule">
-        {
-          projects.map((p, i) => {
-            const text = s.projects[p.key];
-            return (
-              <li class="grid gap-x-8 gap-y-3 border-b border-rule py-7 md:grid-cols-12">
-                <div class="flex items-start gap-4 md:col-span-5">
-                  <span
-                    class="mt-0.5 inline-flex h-7 min-w-10 items-center justify-center rounded-md px-1.5 font-mono text-sm font-bold text-white"
-                    style={`background:${lineColor(i + 1)}`}
-                  >
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <div>
-                    <h3 class="text-lg font-semibold tracking-tight">{text.name}</h3>
-                    <p class="mt-1 font-mono text-xs text-ink-soft">{p.tech}</p>
-                  </div>
-                </div>
-                <p class="leading-relaxed text-ink-soft md:col-span-4">{text.text}</p>
-                <div class="flex flex-wrap items-start gap-x-5 gap-y-1 font-mono text-xs md:col-span-3 md:flex-col md:items-end md:text-right">
-                  {p.release && (
-                    <a href={p.release.url} class="text-ink hover:underline" data-release={p.repo}>
-                      {p.release.tag} · {date(p.release.date)}
+      <article class="mt-12 grid overflow-hidden rounded-2xl border border-rule bg-paper-2 lg:grid-cols-12">
+        <div class="flex flex-col p-7 sm:p-10 lg:col-span-6">
+          <img src="/icon-buses.png" alt="" width="64" height="64" class="h-16 w-16" />
+          <h3 class="mt-6 text-2xl font-[750] tracking-[-0.02em] sm:text-3xl">{s.buses.name}</h3>
+          <p class="mt-3 max-w-lg leading-relaxed text-ink-soft">{s.buses.text}</p>
+          <ul class="mt-auto divide-y divide-rule border-y border-rule pt-0 lg:mt-10">
+            {
+              platforms.map((pl) => (
+                <li class="grid grid-cols-[6.5rem_1fr_auto] items-baseline gap-4 py-3.5 font-mono text-xs">
+                  <span class="font-sans text-sm font-semibold">{pl.label}</span>
+                  {pl.release ? (
+                    <a href={pl.release.url} class="text-ink hover:underline" data-release={pl.repo}>
+                      {pl.release.tag} · {date(pl.release.date)}
                     </a>
+                  ) : (
+                    <span class="text-ink-soft">{pl.note}</span>
                   )}
-                  <a href={`${gh}/${p.repo}`} class="text-ink-soft hover:text-ink hover:underline">GitHub ↗</a>
-                  {p.docs && <a href={p.docs} class="text-ink-soft hover:text-ink hover:underline">Docs ↗</a>}
-                </div>
-              </li>
-            );
-          })
-        }
-      </ol>
-    </section>
-
-    <section class="bg-paper-2">
-      <div class="mx-auto max-w-6xl px-5 py-16">
-        <div class="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-6">
+                  <span class="flex justify-end gap-4 text-ink-soft">
+                    <a href={`${gh}/${pl.repo}`} class="hover:text-ink hover:underline">GitHub ↗</a>
+                    {pl.docs && <a href={pl.docs} class="hover:text-ink hover:underline">Docs ↗</a>}
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div class="relative flex min-h-80 items-end justify-center gap-3 overflow-hidden bg-navy px-6 pt-10 sm:gap-5 lg:col-span-6" aria-hidden="true">
           {
             shots.map((shot, i) => (
-              <figure class={i % 2 ? "sm:translate-y-8" : ""}>
-                <img
-                  src={shot.src}
-                  alt=""
-                  loading="lazy"
-                  width="430"
-                  height="935"
-                  class="w-full rounded-[22px] border border-black/10 shadow-[0_12px_40px_-12px_rgb(19_40_63/0.35)]"
-                />
-                <figcaption class="mt-2 font-mono text-[11px] text-ink-soft">{shot.label}</figcaption>
-              </figure>
+              <img
+                src={shot.src}
+                alt=""
+                loading="lazy"
+                width="430"
+                height="935"
+                class={`w-[30%] max-w-[190px] rounded-t-[20px] border border-b-0 border-white/10 shadow-[0_20px_50px_-10px_rgb(0_0_0/0.5)] ${i === 1 ? "translate-y-0" : "translate-y-8"}`}
+              />
             ))
           }
         </div>
-        <p class="mt-14 font-mono text-xs text-ink-soft">{s.shotsCaption}</p>
+      </article>
+
+      <div class="mt-6 grid gap-6">
+        {
+          others.map((o) => (
+            <article class="grid items-center gap-x-8 gap-y-4 rounded-2xl border border-rule p-7 sm:p-8 md:grid-cols-12">
+              <div class="flex items-center gap-4 md:col-span-4">
+                <img src={o.icon} alt="" width="56" height="56" class="h-14 w-14 rounded-[14px]" />
+                <div>
+                  <h3 class="text-xl font-semibold tracking-tight">{s.projects[o.key].name}</h3>
+                  <p class="font-mono text-xs text-ink-soft">{o.tech}</p>
+                </div>
+              </div>
+              <p class="leading-relaxed text-ink-soft md:col-span-5">{s.projects[o.key].text}</p>
+              <div class="flex flex-wrap gap-x-5 gap-y-1 font-mono text-xs md:col-span-3 md:flex-col md:items-end">
+                {o.release && (
+                  <a href={o.release.url} class="text-ink hover:underline" data-release={o.repo}>
+                    {o.release.tag} · {date(o.release.date)}
+                  </a>
+                )}
+                <a href={`${gh}/${o.repo}`} class="text-ink-soft hover:text-ink hover:underline">GitHub ↗</a>
+              </div>
+            </article>
+          ))
+        }
       </div>
     </section>
 
