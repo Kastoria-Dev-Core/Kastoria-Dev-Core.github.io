@@ -45,10 +45,13 @@ const team = [
   { el: "Κωνσταντίνος Θεολόγου", en: "Konstantinos Theologou", login: "the0099" },
 ];
 
+// Straight from the apps' repos, where CI keeps them up to date with each change to the screens
+const raw = (repo: string, file: string) =>
+  `https://raw.githubusercontent.com/Kastoria-Dev-Core/${repo}/main/docs/screenshots/${file}`;
 const shots = [
-  { src: "/shots/android-stop.png" },
-  { src: "/shots/ios-map.png" },
-  { src: "/shots/android-home.png" },
+  { src: raw("astiko-ktel-kastorias-app", "el-stop.png") },
+  { src: raw("astiko-ktel-kastorias-ios", "el-map-line.png") },
+  { src: raw("astiko-ktel-kastorias-app", "el-home.png") },
 ];
 const builtAt = new Date().toISOString();
 ---
