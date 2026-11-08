@@ -8,8 +8,8 @@ export interface MapLine {
   number: string;
   name: { el: string; en: string };
   color: string;
-  /** SVG path data, one subpath per direction and branch */
-  d: string;
+  /** SVG path data, one per direction and branch, so each draws on its own */
+  parts: string[];
 }
 
 export interface NetworkMap {
@@ -96,10 +96,9 @@ export async function loadNetwork(width = 1000): Promise<NetworkMap | null> {
     number: line.number,
     name: line.name,
     color: line.color,
-    d: parts
+    parts: parts
       .filter((p) => p.length > 1)
-      .map((p) => "M" + p.map(([lat, lng]) => xy(lat, lng).join(" ")).join("L"))
-      .join(""),
+      .map((p) => "M" + p.map(([lat, lng]) => xy(lat, lng).join(" ")).join("L")),
   }));
 
   return {

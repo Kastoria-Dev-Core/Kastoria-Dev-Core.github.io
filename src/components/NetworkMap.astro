@@ -17,11 +17,11 @@ const { map, label } = Astro.props;
     data-network
   >
     {
-      map.lines.map((line, i) => (
+      map.lines.flatMap((line, i) => line.parts.map((d) => (
         <path
           class="route transition-opacity duration-200"
           data-line={line.id}
-          d={line.d}
+          d={d}
           pathLength="1"
           fill="none"
           stroke={line.color}
@@ -30,7 +30,7 @@ const { map, label } = Astro.props;
           stroke-linejoin="round"
           style={`animation-delay:${i * 90}ms`}
         />
-      ))
+      )))
     }
     <g class="fill-paper/70">
       {map.stops.map(([x, y]) => <circle cx={x} cy={y} r="2.4" />)}
