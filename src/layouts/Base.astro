@@ -7,10 +7,16 @@ import { t } from "../lib/i18n";
 
 interface Props {
   lang: Lang;
+  /** The page's own title, before the site's name; none on the home page */
+  title?: string;
 }
-const { lang } = Astro.props;
+const { lang, title } = Astro.props;
 const s = t[lang];
-const canonical = new URL(lang === "el" ? "/" : "/en/", Astro.site);
+const pageTitle = title ? `${title} · ${s.title}` : s.title;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+// The same page in the other language: /en/x/ <-> /x/
+const elPath = Astro.url.pathname.replace(/^\/en(\/|$)/, "/");
+const enPath = elPath === "/" ? "/en/" : `/en${elPath}`;
 ---
 
 <!doctype html>
@@ -18,14 +24,14 @@ const canonical = new URL(lang === "el" ? "/" : "/en/", Astro.site);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{s.title}</title>
+    <title>{pageTitle}</title>
     <meta name="description" content={s.description} />
     <meta name="theme-color" content="#13283f" />
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="el" href={new URL("/", Astro.site)} />
-    <link rel="alternate" hreflang="en" href={new URL("/en/", Astro.site)} />
+    <link rel="alternate" hreflang="el" href={new URL(elPath, Astro.site)} />
+    <link rel="alternate" hreflang="en" href={new URL(enPath, Astro.site)} />
     <link rel="icon" href="/logo-mark.svg" type="image/svg+xml" />
-    <meta property="og:title" content={s.title} />
+    <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={s.description} />
     <meta property="og:image" content={new URL("/social-preview.png", Astro.site)} />
     <meta property="og:url" content={canonical} />
